@@ -61,14 +61,6 @@ def is_x_mas(input, i, j):
     return True if corners.count("M") == 2 and corners.count("S") == 2 else False
 
 
-def find_A(input, start, end):
-    for i in range(start, end):
-        if input[i] == "A":
-            return i
-
-    return -1
-
-
 def x_mas_count():
     np_input = get_input()
 
