@@ -79,7 +79,6 @@ bool check_if_loop_is_possible(std::vector<std::vector<char>> &matrix, int x,
   std::set<std::tuple<int, int, int>> visited_states;
   int cur_dir = 0;
 
-  // WARN: infinite loop here
   while (in_bounds(x, y, n, m)) {
 
     if (visited_states.count({x, y, cur_dir})) {
@@ -113,6 +112,7 @@ void solve_part2(std::vector<std::vector<char>> &matrix, int x, int y) {
     for (int j = 0; j < m; j++) {
       if (matrix[i][j] == '.') {
         matrix[i][j] = 'o';
+        std::cout << i << " " << j << std::endl;
         if (check_if_loop_is_possible(matrix, x, y)) {
           res++;
         }
@@ -125,7 +125,6 @@ void solve_part2(std::vector<std::vector<char>> &matrix, int x, int y) {
 }
 
 int main() {
-  // std::vector<std::vector<char>> matrix(10, std::vector(10, ' '));
   std::vector<std::vector<char>> matrix(130, std::vector(130, ' '));
   get_input(matrix);
   const auto &[x, y] = get_gaurd_coords(matrix);
