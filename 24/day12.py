@@ -40,7 +40,6 @@ def fence_region(region, input, i, j, visited, area, perimeter, dirs):
     return area, perimeter, visited
 
 
-# TODO:
 def fence_region_with_discount(region, input, i, j, visited, area, perimeter, dirs):
     if not in_bounds(i, j, len(input)) or input[i][j] != region:
         return area, perimeter, visited
@@ -48,13 +47,36 @@ def fence_region_with_discount(region, input, i, j, visited, area, perimeter, di
     if visited[i][j] == 0:
         visited[i][j] = 1
         area += 1
-        for dir in dirs:
+        for idx, dir in enumerate(dirs):
             neighbour_pos = [i + dir[0], j + dir[1]]
             if (
                 not in_bounds(neighbour_pos[0], neighbour_pos[1], len(input))
                 or input[neighbour_pos[0]][neighbour_pos[1]] != region
             ):
-                perimeter += 1
+                var = True
+                if idx % 2 == 0:
+                    for x in range(j, len(visited)):
+                        if visited[i][x] == 1 and x != j and input[i][x] == region:
+                            var = False
+                            break
+
+                        if input[i][x] != region:
+                            break
+
+                    if var:
+                        perimeter += 1
+                else:
+                    for x in range(i, len(visited)):
+                        if visited[x][j] == 1 and x != i and input[x][j] == region:
+                            var = False
+                            break
+
+                        if input[x][j] != region:
+                            break
+
+                    if var:
+                        perimeter += 1
+
             else:
                 area, perimeter, visited = fence_region_with_discount(
                     region,
@@ -78,7 +100,7 @@ def solve(input):
     for i in range(len(input)):
         for j in range(len(input)):
             if visited[i][j] == 0:
-                area, perimeter, visited = fence_region(
+                area, perimeter, visited = fence_region_with_discount(
                     input[i][j], input, i, j, visited, 0, 0, dirs
                 )
                 res += area * perimeter
