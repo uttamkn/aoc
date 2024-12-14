@@ -12,82 +12,58 @@ def in_bounds(i, j, n):
 
 
 def fence_region(region, input, i, j, visited, area, perimeter, dirs):
-    if not in_bounds(i, j, len(input)) or input[i][j] != region:
+    if not in_bounds(i, j, len(input)) or input[i][j] != region or visited[i][j]:
         return area, perimeter, visited
 
-    if visited[i][j] == 0:
-        visited[i][j] = 1
-        area += 1
-        for dir in dirs:
-            neighbour_pos = [i + dir[0], j + dir[1]]
-            if (
-                not in_bounds(neighbour_pos[0], neighbour_pos[1], len(input))
-                or input[neighbour_pos[0]][neighbour_pos[1]] != region
-            ):
-                perimeter += 1
-            else:
-                area, perimeter, visited = fence_region(
-                    region,
-                    input,
-                    neighbour_pos[0],
-                    neighbour_pos[1],
-                    visited,
-                    area,
-                    perimeter,
-                    dirs,
-                )
+    visited[i][j] = 1
+    area += 1
+    for dir in dirs:
+        ni, nj = i + dir[0], j + dir[1]
+        if not in_bounds(ni, nj, len(input)) or input[ni][nj] != region:
+            perimeter += 1
+        elif visited[ni][nj] == 0:
+            area, perimeter, visited = fence_region(
+                region,
+                input,
+                ni,
+                nj,
+                visited,
+                area,
+                perimeter,
+                dirs,
+            )
 
     return area, perimeter, visited
 
 
-def fence_region_with_discount(region, input, i, j, visited, area, perimeter, dirs):
-    if not in_bounds(i, j, len(input)) or input[i][j] != region:
+# TODO:
+def fence_region_with_discount(
+    region, input, i, j, start_i, start_j, visited, area, perimeter, dirs
+):
+    if not in_bounds(i, j, len(input)) or input[i][j] != region or visited[i][j]:
         return area, perimeter, visited
 
-    if visited[i][j] == 0:
-        visited[i][j] = 1
-        area += 1
-        for idx, dir in enumerate(dirs):
-            neighbour_pos = [i + dir[0], j + dir[1]]
-            if (
-                not in_bounds(neighbour_pos[0], neighbour_pos[1], len(input))
-                or input[neighbour_pos[0]][neighbour_pos[1]] != region
-            ):
-                var = True
-                if idx % 2 == 0:
-                    for x in range(j, len(visited)):
-                        if visited[i][x] == 1 and x != j and input[i][x] == region:
-                            var = False
-                            break
+    visited[i][j] = 1
+    area += 1
 
-                        if input[i][x] != region:
-                            break
-
-                    if var:
-                        perimeter += 1
-                else:
-                    for x in range(i, len(visited)):
-                        if visited[x][j] == 1 and x != i and input[x][j] == region:
-                            var = False
-                            break
-
-                        if input[x][j] != region:
-                            break
-
-                    if var:
-                        perimeter += 1
-
-            else:
-                area, perimeter, visited = fence_region_with_discount(
-                    region,
-                    input,
-                    neighbour_pos[0],
-                    neighbour_pos[1],
-                    visited,
-                    area,
-                    perimeter,
-                    dirs,
-                )
+    for dir in dirs:
+        ni, nj = i + dir[0], j + dir[1]
+        if not in_bounds(ni, nj, len(input)) or input[ni][nj] != region:
+            # count corners
+            pass
+        elif visited[ni][nj] == 0:
+            area, perimeter, visited = fence_region_with_discount(
+                region,
+                input,
+                ni,
+                nj,
+                start_i,
+                start_j,
+                visited,
+                area,
+                perimeter,
+                dirs,
+            )
 
     return area, perimeter, visited
 
@@ -101,7 +77,7 @@ def solve(input):
         for j in range(len(input)):
             if visited[i][j] == 0:
                 area, perimeter, visited = fence_region_with_discount(
-                    input[i][j], input, i, j, visited, 0, 0, dirs
+                    input[i][j], input, i, j, i, j, visited, 0, 0, dirs
                 )
                 res += area * perimeter
 
@@ -112,5 +88,7 @@ if __name__ == "__main__":
     input = get_input()
     # dirs = [[-1, 0], [0, 1], [1, 0], [0, -1]]
     # visited = [[0 for _ in range(len(input))] for _ in range(len(input))]
-    # print(fence_region(input[0][0], input, 0, 0, visited, 0, 0, dirs))
+    # print(
+    #     fence_region_with_discount(input[0][0], input, 0, 0, 0, 0, visited, 0, 0, dirs)
+    # )
     print(solve(input))
